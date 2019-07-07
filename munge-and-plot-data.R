@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-dat1<-read.csv("_kbase_apps_w_extended_information-extended.txt", header=F, sep="\t")
+dat1<-read.csv("data/_kbase_apps_w_extended_information-extended.txt", header=F, sep="\t")
 
 colnames(dat1)<-c('KBase.Category','Module.Title','Module.Name','App.Name','Icon.URL','Git.URL','Input.Objects','Output.Objects','Starred.Count','Times.Run','Percent.Success','Time.Taken')
 
@@ -35,13 +35,12 @@ for (i in 1:nrow(dat1)) {
       dat1[which(dat1$Module.Title == dat1$Module.Title[i])[1],]$KBase.cat.Factors3 <- dat1[which(dat1$Module.Title == dat1$Module.Title[i])[2],]$KBase.Category
     }
   }
-
 }
 
 
 
-dat2<-unique(dat1[,-1]) #remove duplicated rows because of KBase category cross-listing
-
+#dat2<-unique(dat1[,-1]) #remove duplicated rows because of KBase category cross-listing
+dat2<-dat1[-c(which(duplicated(dat1$Module.Title) == TRUE)),]
 
 
 for (i in 1:nrow(dat2)) {
@@ -75,10 +74,6 @@ for (i in 1:nrow(dat2)) {
     }
   }
 }
-
-
-
-
 
 
 
@@ -119,18 +114,30 @@ for (k in 1:length(alloutputobjects)) {
 # }
 
 #trim for matrix
-dat3<-dat2[,seq(which(colnames(dat2) == "KBase.cat.ComparativeGenomics"),ncol(dat2), by=1)]
+rownames(dat2)<-make.names(as.vector(dat2$Module.Title), unique=TRUE)
 
-dat3 <- as.data.frame(sapply(dat3, as.numeric))
-rownames(dat3)<-make.names(as.vector(dat2$Module.Title), unique=TRUE)
-rownames(dat2)<-make.names(as.vector(dat2$App.Name), unique=TRUE)
+dat2.reduced<-dat2[-c(which(dat2$KBase.cat.Factors1 == "Read Processing")),]
 
-dat3.pca <- prcomp(dat3, center = TRUE)
+dat2a<-dat2[,seq(which(colnames(dat2) == "KBase.cat.ComparativeGenomics"),ncol(dat2), by=1)]
+dat2.reduced.matrix<-dat2.reduced[,seq(which(colnames(dat2.reduced) == "KBase.cat.ComparativeGenomics"),ncol(dat2.reduced), by=1)]
+
+dat2a <- as.data.frame(sapply(dat2a, as.numeric))
 
 
-dat2$PCA.PC1<-as.numeric(dat3.pca$x[,1])
-dat2$PCA.PC2<-as.numeric(dat3.pca$x[,2])
-dat2$PCA.PC3<-as.numeric(dat3.pca$x[,3])
+dat2.reduced.matrix <- as.data.frame(sapply(dat2.reduced.matrix, as.numeric))
+
+
+dat2a.pca <- prcomp(dat2a, center = TRUE)
+dat2.reduced.matrix.pca <- prcomp(dat2.reduced.matrix, center = TRUE)
+
+
+dat2$PCA.PC1<-as.numeric(dat2a.pca$x[,1])
+dat2$PCA.PC2<-as.numeric(dat2a.pca$x[,2])
+dat2$PCA.PC3<-as.numeric(dat2a.pca$x[,3])
+
+dat2.reduced$PCA.PC1<-as.numeric(dat2.reduced.matrix.pca$x[,1])
+dat2.reduced$PCA.PC2<-as.numeric(dat2.reduced.matrix.pca$x[,2])
+dat2.reduced$PCA.PC3<-as.numeric(dat2.reduced.matrix.pca$x[,3])
 
 
 
@@ -141,7 +148,7 @@ dat2$PCA.PC3<-as.numeric(dat3.pca$x[,3])
 
 library(ggbiplot)
 library(ggrepel)
-
+library(ggimage)
 
 as.vector(unique(dat2$KBase.cat.Factors1))
 # [1] "Read Processing"       "Genome Assembly"       "Genome Annotation"    
@@ -152,13 +159,41 @@ as.vector(unique(dat2$KBase.cat.Factors1))
 
 pal1 = c('#6239B3','#E6B74D','#9C1D22','#0A71A7','#23877D','#328031','#D16197','#74B8DC','#ED8C3C')
 
+# no read processing
+pal2 = c('#6239B3','#E6B74D','#9C1D22','#0A71A7','#23877D','#328031','#74B8DC','#ED8C3C')
 
 
+png.list1 = vector()
+for (i in 1:length(as.vector(dat2$App.Name))) {
+  png.list1[i] = paste0("images/",as.vector(dat2$App.Name[i]),".png")
+}
+
+
+png.list2 = vector()
+for (i in 1:length(as.vector(dat2.reduced$App.Name))) {
+  png.list2[i] = paste0("images/",as.vector(dat2.reduced$App.Name[i]),".png")
+}
+
+
+
+
+
+
+# colored dots
 p <- ggplot(dat2, aes(x=PCA.PC1, y=PCA.PC2, fill = factor(KBase.cat.Factors1))) + theme_bw() + geom_point(size=6, stroke=4, shape=21, aes(color = factor(KBase.cat.Factors2))) + geom_point(size=6, stroke=2, shape=21, aes(color = factor(KBase.cat.Factors3))) + guides(fill = guide_legend(title="KBase.cat.Factors1", override.aes=list(shape=21)), color = guide_legend(title="KBase.cat.Factors2")) + scale_fill_manual(values=pal1) + scale_color_manual(values=pal1)
+
+# icons
+p <- ggplot(dat2, aes(x=PCA.PC1, y=PCA.PC2, fill = factor(KBase.cat.Factors1))) + theme_bw() + geom_point(size=6, stroke=4, shape=21, aes(color = factor(KBase.cat.Factors2))) + geom_point(size=6, stroke=2, shape=21, aes(color = factor(KBase.cat.Factors3))) + guides(fill = guide_legend(title="KBase.cat.Factors1", override.aes=list(shape=21)), color = guide_legend(title="KBase.cat.Factors2")) + scale_fill_manual(values=pal1) + scale_color_manual(values=pal1) + geom_image(aes(image=png.list1), size=.05)
+
+# icon - reduced
+p <- ggplot(dat2.reduced, aes(x=PCA.PC1, y=PCA.PC2, fill = factor(KBase.cat.Factors1))) + theme_bw() + geom_point(size=6, stroke=4, shape=21, aes(color = factor(KBase.cat.Factors2))) + geom_point(size=6, stroke=2, shape=21, aes(color = factor(KBase.cat.Factors3))) + guides(fill = guide_legend(title="KBase.cat.Factors1", override.aes=list(shape=21)), color = guide_legend(title="KBase.cat.Factors2")) + scale_fill_manual(values=pal2) + scale_color_manual(values=pal2) + geom_image(aes(image=png.list2), size=.05)
+pdf
+
+# icon - reduced, no legend
+p <- ggplot(dat2.reduced, aes(x=PCA.PC1, y=PCA.PC2, fill = factor(KBase.cat.Factors1))) + theme_bw() + geom_point(size=6, stroke=4, shape=21, aes(color = factor(KBase.cat.Factors2))) + geom_point(size=6, stroke=2, shape=21, aes(color = factor(KBase.cat.Factors3))) + guides(fill = guide_legend(title="KBase.cat.Factors1", override.aes=list(shape=21)), color = guide_legend(title="KBase.cat.Factors2")) + scale_fill_manual(values=pal2) + scale_color_manual(values=pal2) + geom_image(aes(image=png.list2), size=.05) + theme(legend.position = "none")
 
 p + geom_text_repel(aes(fill = factor(KBase.cat.Factors1), label = rownames(dat2)), size = 3.5)
 p + geom_label(label=rownames(dat2))
-
 
 
 
@@ -166,6 +201,6 @@ ggbiplot(dat3.pca, aes(label = rowname(dat3.pca)), labels=rownames(dat3.pca)) + 
 
 
 
-
+ggsave("test.png", p, device = "png", width=10, height=10, units = ("in"))
 
 
