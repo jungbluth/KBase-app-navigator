@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-dat1<-read.csv("data/_kbase_apps_w_extended_information-extended.txt", header=F, sep="\t")
+dat1<-read.csv("data/_kbase_apps_w_extended_information-part2.txt", header=F, sep="\t")
 
 colnames(dat1)<-c('KBase.Category','Module.Title','Module.Name','App.Name','Icon.URL','Git.URL','Input.Objects','Output.Objects','Starred.Count','Times.Run','Percent.Success','Time.Taken')
 
@@ -165,13 +165,13 @@ pal2 = c('#6239B3','#E6B74D','#9C1D22','#0A71A7','#23877D','#328031','#74B8DC','
 
 png.list1 = vector()
 for (i in 1:length(as.vector(dat2$App.Name))) {
-  png.list1[i] = paste0("images/",as.vector(dat2$App.Name[i]),".png")
+  png.list1[i] = paste0("icons/",as.vector(dat2$App.Name[i]),".png")
 }
 
 
 png.list2 = vector()
 for (i in 1:length(as.vector(dat2.reduced$App.Name))) {
-  png.list2[i] = paste0("images/",as.vector(dat2.reduced$App.Name[i]),".png")
+  png.list2[i] = paste0("icons/",as.vector(dat2.reduced$App.Name[i]),".png")
 }
 
 

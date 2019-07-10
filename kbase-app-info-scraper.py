@@ -16,7 +16,7 @@ def fetch_applist_from_url():
     import re
     url = 'https://kbase.us/applist/'
     f = urllib.request.urlopen(url)
-    with open("_kbase_apps_w_extended_information.txt", "w") as out_file:
+    with open("_kbase_apps_w_extended_information-part1.txt", "w") as out_file:
         for line in f.read().decode('utf-8').split('\n'):
             if ("module" in line):
                 app_category = str(line.split(' module="')[1].split('" name="')[0])
@@ -120,8 +120,8 @@ def fetch_info_from_app_catalog_html(app_url, module_name, app_name):
 
 if __name__ == '__main__':
     fetch_applist_from_url() # get initial information
-    with open("_kbase_apps_w_extended_information-extended.txt", "w") as out_file:
-        with open("_kbase_apps_w_extended_information.txt", "r") as in_file:
+    with open("_kbase_apps_w_extended_information-part2.txt", "w") as out_file:
+        with open("_kbase_apps_w_extended_information-part1.txt", "r") as in_file:
             for line in in_file.read().split('\n'):
                 if len(line.strip()) != 0: # ignore whitespace only lines
                     module_name = str(line.split('\t')[2])
