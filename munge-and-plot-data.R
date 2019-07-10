@@ -150,7 +150,7 @@ library(ggbiplot)
 library(ggrepel)
 library(ggimage)
 
-as.vector(unique(dat2$KBase.cat.Factors1))
+# as.vector(unique(dat2$KBase.cat.Factors1))
 # [1] "Read Processing"       "Genome Assembly"       "Genome Annotation"    
 # [4] "Sequence Analysis"     "Comparative Genomics"  "Metabolic Modeling"   
 # [7] "Expression"            "Microbial Communities" "Utilities"  
@@ -180,27 +180,28 @@ for (i in 1:length(as.vector(dat2.reduced$App.Name))) {
 
 
 # colored dots
-p <- ggplot(dat2, aes(x=PCA.PC1, y=PCA.PC2, fill = factor(KBase.cat.Factors1))) + theme_bw() + geom_point(size=6, stroke=4, shape=21, aes(color = factor(KBase.cat.Factors2))) + geom_point(size=6, stroke=2, shape=21, aes(color = factor(KBase.cat.Factors3))) + guides(fill = guide_legend(title="KBase.cat.Factors1", override.aes=list(shape=21)), color = guide_legend(title="KBase.cat.Factors2")) + scale_fill_manual(values=pal1) + scale_color_manual(values=pal1)
+# p <- ggplot(dat2, aes(x=PCA.PC1, y=PCA.PC2, fill = factor(KBase.cat.Factors1))) + theme_bw() + geom_point(size=6, stroke=4, shape=21, aes(color = factor(KBase.cat.Factors2))) + geom_point(size=6, stroke=2, shape=21, aes(color = factor(KBase.cat.Factors3))) + guides(fill = guide_legend(title="KBase.cat.Factors1", override.aes=list(shape=21)), color = guide_legend(title="KBase.cat.Factors2")) + scale_fill_manual(values=pal1) + scale_color_manual(values=pal1)
 
 # icons
-p <- ggplot(dat2, aes(x=PCA.PC1, y=PCA.PC2, fill = factor(KBase.cat.Factors1))) + theme_bw() + geom_point(size=6, stroke=4, shape=21, aes(color = factor(KBase.cat.Factors2))) + geom_point(size=6, stroke=2, shape=21, aes(color = factor(KBase.cat.Factors3))) + guides(fill = guide_legend(title="KBase.cat.Factors1", override.aes=list(shape=21)), color = guide_legend(title="KBase.cat.Factors2")) + scale_fill_manual(values=pal1) + scale_color_manual(values=pal1) + geom_image(aes(image=png.list1), size=.05)
+p1 <- ggplot(dat2, aes(x=PCA.PC1, y=PCA.PC2, fill = factor(KBase.cat.Factors1))) + theme_bw() + geom_point(size=6, stroke=4, shape=21, aes(color = factor(KBase.cat.Factors2))) + geom_point(size=6, stroke=2, shape=21, aes(color = factor(KBase.cat.Factors3))) + guides(fill = guide_legend(title="KBase.cat.Factors1", override.aes=list(shape=21)), color = guide_legend(title="KBase.cat.Factors2")) + scale_fill_manual(values=pal1) + scale_color_manual(values=pal1) + geom_image(aes(image=png.list1), size=.05)
 
 # icon - reduced
-p <- ggplot(dat2.reduced, aes(x=PCA.PC1, y=PCA.PC2, fill = factor(KBase.cat.Factors1))) + theme_bw() + geom_point(size=6, stroke=4, shape=21, aes(color = factor(KBase.cat.Factors2))) + geom_point(size=6, stroke=2, shape=21, aes(color = factor(KBase.cat.Factors3))) + guides(fill = guide_legend(title="KBase.cat.Factors1", override.aes=list(shape=21)), color = guide_legend(title="KBase.cat.Factors2")) + scale_fill_manual(values=pal2) + scale_color_manual(values=pal2) + geom_image(aes(image=png.list2), size=.05)
-pdf
+# p <- ggplot(dat2.reduced, aes(x=PCA.PC1, y=PCA.PC2, fill = factor(KBase.cat.Factors1))) + theme_bw() + geom_point(size=6, stroke=4, shape=21, aes(color = factor(KBase.cat.Factors2))) + geom_point(size=6, stroke=2, shape=21, aes(color = factor(KBase.cat.Factors3))) + guides(fill = guide_legend(title="KBase.cat.Factors1", override.aes=list(shape=21)), color = guide_legend(title="KBase.cat.Factors2")) + scale_fill_manual(values=pal2) + scale_color_manual(values=pal2) + geom_image(aes(image=png.list2), size=.05)
+
 
 # icon - reduced, no legend
-p <- ggplot(dat2.reduced, aes(x=PCA.PC1, y=PCA.PC2, fill = factor(KBase.cat.Factors1))) + theme_bw() + geom_point(size=6, stroke=4, shape=21, aes(color = factor(KBase.cat.Factors2))) + geom_point(size=6, stroke=2, shape=21, aes(color = factor(KBase.cat.Factors3))) + guides(fill = guide_legend(title="KBase.cat.Factors1", override.aes=list(shape=21)), color = guide_legend(title="KBase.cat.Factors2")) + scale_fill_manual(values=pal2) + scale_color_manual(values=pal2) + geom_image(aes(image=png.list2), size=.05) + theme(legend.position = "none")
+p2 <- ggplot(dat2.reduced, aes(x=PCA.PC1, y=PCA.PC2, fill = factor(KBase.cat.Factors1))) + theme_bw() + geom_point(size=6, stroke=4, shape=21, aes(color = factor(KBase.cat.Factors2))) + geom_point(size=6, stroke=2, shape=21, aes(color = factor(KBase.cat.Factors3))) + guides(fill = guide_legend(title="KBase.cat.Factors1", override.aes=list(shape=21)), color = guide_legend(title="KBase.cat.Factors2")) + scale_fill_manual(values=pal2) + scale_color_manual(values=pal2) + geom_image(aes(image=png.list2), size=.05) + theme(legend.position = "none")
 
-p + geom_text_repel(aes(fill = factor(KBase.cat.Factors1), label = rownames(dat2)), size = 3.5)
-p + geom_label(label=rownames(dat2))
-
-
-
-ggbiplot(dat3.pca, aes(label = rowname(dat3.pca)), labels=rownames(dat3.pca)) + geom_text_repel(aes(label = rownames(df)), size = 3.5)
+# p + geom_text_repel(aes(fill = factor(KBase.cat.Factors1), label = rownames(dat2)), size = 3.5)
+# p + geom_label(label=rownames(dat2))
 
 
 
-ggsave("test.png", p, device = "png", width=10, height=10, units = ("in"))
+#ggbiplot(dat3.pca, aes(label = rowname(dat3.pca)), labels=rownames(dat3.pca)) + geom_text_repel(aes(label = rownames(df)), size = 3.5)
 
+
+
+ggsave("test1.png", p1, device = "png", width=10, height=10, units = ("in"))
+
+ggsave("test2.png", p2, device = "png", width=10, height=10, units = ("in"))
 
